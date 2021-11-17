@@ -76,4 +76,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setClock('.timer', '2021-11-20'); //Запускаем таймер, задаём селектор таймера и время окончания
+
+    //Modal
+
+    const modalTrigger = document.querySelectorAll('[data-modal]'),
+          modal = document.querySelector('.modal'),
+          modalCloseBtn = document.querySelector('[data-close]');
+
+    function closeModal(modal) {
+        modal.classList.toggle('show');
+        document.body.style.overflow = ''; //чтобы при закрытии можно было скролить
+    }
+
+    modalTrigger.forEach((button) => {
+        button.addEventListener('click', () => {
+            modal.classList.toggle('show');
+            document.body.style.overflow = 'hidden'; //чтобы при открытии модального окна страницу нельзя было скролить
+        });
+    });
+
+    modalCloseBtn.addEventListener('click', () => {
+        closeModal(modal);
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal(modal);
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code === "Escape" && modal.matches('.show')) {
+            closeModal(modal);
+        }
+    });
 });
