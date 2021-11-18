@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     //Timer
     
-    function getTimeRemaining (endTime) { //Получаем разницу между конечным временем и текущим и записываем её в объект
+    function getTimeRemaining(endTime) { //Получаем разницу между конечным временем и текущим и записываем её в объект
         const t = Date.parse(endTime) - Date.now(),
               days = Math.floor(t / (1000 * 60 * 60 * 24)),
               hours = Math.floor((t / (1000 * 60 * 60)) % 24),
@@ -76,4 +76,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setClock('.timer', '2021-11-20'); //Запускаем таймер, задаём селектор таймера и время окончания
+
+    //Modal
+
+    const modalTrigger = document.querySelectorAll('[data-modal]'),
+          modal = document.querySelector('.modal'),
+          modalCloseBtn = document.querySelector('[data-close]');
+
+    function openModal() {
+        modal.classList.toggle('show');
+        document.body.style.overflow = 'hidden'; //чтобы при открытии модального окна страницу нельзя было скролить
+        clearInterval(modalTimerId);
+    }
+
+    function closeModal(modalName) {
+        modalName.classList.toggle('show');
+        document.body.style.overflow = ''; //чтобы при закрытии можно было скролить
+    }
+
+    modalTrigger.forEach((button) => {
+        button.addEventListener('click', () => {
+            openModal();
+        });
+    });
+
+    modalCloseBtn.addEventListener('click', () => {
+        closeModal(modal);
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal(modal);
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code === "Escape" && modal.matches('.show')) {
+            closeModal(modal);
+        }
+    });
+
+    const modalTimerId = setTimeout(openModal, 5000); //окно само откроется через 5 сек
+
+    function showModalByScroll() { //открыть окно если страница проскроллена до конца
+        if (Math.ceil(window.pageYOffset + document.documentElement.clientHeight) >= document.documentElement.scrollHeight) {
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll); //удаляем обработчик после первого вызова
+        }
+    }
+
+    window.addEventListener('scroll', showModalByScroll); //обработчик сробатывающий при прокрутке страницы
 });
