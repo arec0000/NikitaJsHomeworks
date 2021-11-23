@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 //menu
 
 class MenuItem {
-    constructor(selector, title, text, cost, img, alt) {
+    constructor(selector, title, text, cost, img, alt, ...classes) {
         this.container = document.querySelector(selector);
         this.title = title;
         this.text = text;
@@ -139,6 +139,8 @@ class MenuItem {
         this.img = img;
         this.alt = alt;
         this.transfer = 27; //курс валюты, в будущем можно получать с сервера
+        this.classes = classes;
+        this.changeToUAH();
     }
 
     changeToUAH() {
@@ -146,10 +148,16 @@ class MenuItem {
     }
 
     addMenu() {
-        this.changeToUAH();
-        this.container.innerHTML += 
-        `<div class="menu__item">
-            <img src=${this.img} alt=${this.alt}>
+        this.element = document.createElement('div');
+
+        if (!this.classes.length) { //параметр по умолчанию
+            this.element.classList.add('menu__item');
+        } else {
+            this.classes.forEach(newClass => this.element.classList.add(newClass));
+        }
+
+        this.element.innerHTML += 
+            `<img src=${this.img} alt=${this.alt}>
             <h3 class="menu__item-subtitle">Меню "${this.title}"</h3>
             <div class="menu__item-descr">${this.text}</div>
             <div class="menu__item-divider"></div>
@@ -157,16 +165,16 @@ class MenuItem {
             <div class="menu__item-cost">Цена:</div>
                 <div class="menu__item-total">
                 <span>${this.cost}</span> грн/день</div>
-            </div>
-        </div>`;
+            </div>`;
+        this.container.append(this.element);
     }
 }
 
-const secondFintess = new MenuItem(
-    '.menu__field .container', 
-    'Фитнес', 
-    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
-    11.11, 
-    'img/tabs/vegy.jpg', 
-    'vegy');
-secondFintess.addMenu();
+// const secondFintess = new MenuItem(
+//     '.menu__field .container', 
+//     'Фитнес', 
+//     'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
+//     11.11, 
+//     'img/tabs/vegy.jpg', 
+//     'vegy');
+// secondFintess.addMenu();
