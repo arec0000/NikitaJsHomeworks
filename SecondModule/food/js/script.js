@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const modalTimerId = setTimeout(openModal, 5000); //окно само откроется через 5 сек
+    const modalTimerId = setTimeout(openModal, 5000); //окно само откроется через 5 сек, бесит довольно сильно
 
     function showModalByScroll() { //открыть окно если страница проскроллена до конца
         if (Math.ceil(window.pageYOffset + document.documentElement.clientHeight) >= document.documentElement.scrollHeight) {
@@ -127,3 +127,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('scroll', showModalByScroll); //обработчик сробатывающий при прокрутке страницы
 });
+
+//menu
+
+class MenuItem {
+    constructor(selector, title, text, cost, img, alt) {
+        this.container = document.querySelector(selector);
+        this.title = title;
+        this.text = text;
+        this.cost = cost;
+        this.img = img;
+        this.alt = alt;
+        this.transfer = 27; //курс валюты, в будущем можно получать с сервера
+    }
+
+    changeToUAH() {
+        this.cost = Math.round(this.cost * this.transfer);
+    }
+
+    addMenu() {
+        this.changeToUAH();
+        this.container.innerHTML += 
+        `<div class="menu__item">
+            <img src=${this.img} alt=${this.alt}>
+            <h3 class="menu__item-subtitle">Меню "${this.title}"</h3>
+            <div class="menu__item-descr">${this.text}</div>
+            <div class="menu__item-divider"></div>
+            <div class="menu__item-price">
+            <div class="menu__item-cost">Цена:</div>
+                <div class="menu__item-total">
+                <span>${this.cost}</span> грн/день</div>
+            </div>
+        </div>`;
+    }
+}
+
+const secondFintess = new MenuItem(
+    '.menu__field .container', 
+    'Фитнес', 
+    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
+    11.11, 
+    'img/tabs/vegy.jpg', 
+    'vegy');
+secondFintess.addMenu();
