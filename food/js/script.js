@@ -178,3 +178,46 @@ class MenuItem {
 //     'img/tabs/vegy.jpg', 
 //     'vegy');
 // secondFintess.addMenu();
+
+//Forms
+
+const forms = document.querySelectorAll('form');
+
+const messege = {
+    loading: 'Загрузка',
+    success: 'Спасибо',
+    failure: 'Чё-то пошло не так'
+};
+
+forms.forEach(item => {
+    postData(item);
+});
+
+function postData(form) {
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const statusMessage = document.createElement('div');
+        statusMessage.classList.add('status');
+        statusMessage.textContent = messege.loading;
+        form.append(statusMessage);
+
+        const request = new XMLHttpRequest();
+
+        request.open('POST', 'server.php');
+        request.setRequestHeader('Content-type', 'multipart/form-data');
+
+        const formData = new FormData(form);
+
+        request.send(formData);
+
+        request.addEventListener('load', () => {
+            if (request.status === 200) {
+                console.log(request.response);
+                statusMessage.textContent = messege.success;
+            } else {
+                statusMessage.textContent = messege.failure;
+            }
+        });
+    });
+}
