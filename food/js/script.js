@@ -77,20 +77,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setClock('.timer', '2021-11-20'); //Запускаем таймер, задаём селектор таймера и время окончания
 
+    //menu
+
+    class MenuItem {
+        constructor(selector, title, text, cost, img, alt, ...classes) {
+            this.container = document.querySelector(selector);
+            this.title = title;
+            this.text = text;
+            this.cost = cost;
+            this.img = img;
+            this.alt = alt;
+            this.transfer = 27; //курс валюты, в будущем можно получать с сервера
+            this.classes = classes;
+            this.changeToUAH();
+        }
+
+        changeToUAH() {
+            this.cost = Math.round(this.cost * this.transfer);
+        }
+
+        addMenu() {
+            this.element = document.createElement('div');
+
+            if (!this.classes.length) { //параметр по умолчанию
+                this.element.classList.add('menu__item');
+            } else {
+                this.classes.forEach(newClass => this.element.classList.add(newClass));
+            }
+
+            this.element.innerHTML += 
+                `<img src=${this.img} alt=${this.alt}>
+                <h3 class="menu__item-subtitle">Меню "${this.title}"</h3>
+                <div class="menu__item-descr">${this.text}</div>
+                <div class="menu__item-divider"></div>
+                <div class="menu__item-price">
+                <div class="menu__item-cost">Цена:</div>
+                    <div class="menu__item-total">
+                    <span>${this.cost}</span> грн/день</div>
+                </div>`;
+            this.container.append(this.element);
+        }
+    }
+
+    // const secondFintess = new MenuItem(
+    //     '.menu__field .container', 
+    //     'Фитнес', 
+    //     'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
+    //     11.11, 
+    //     'img/tabs/vegy.jpg', 
+    //     'vegy');
+    // secondFintess.addMenu();
+
     //Modal
 
     const modalTrigger = document.querySelectorAll('[data-modal]'),
-          modal = document.querySelector('.modal'),
-          modalCloseBtn = document.querySelector('[data-close]');
+            modal = document.querySelector('.modal');
 
     function openModal() {
-        modal.classList.toggle('show');
+        modal.classList.add('show');
         document.body.style.overflow = 'hidden'; //чтобы при открытии модального окна страницу нельзя было скролить
         clearInterval(modalTimerId);
     }
 
-    function closeModal(modalName) {
-        modalName.classList.toggle('show');
+    function closeModal() {
+        modal.classList.remove('show');
         document.body.style.overflow = ''; //чтобы при закрытии можно было скролить
     }
 
@@ -100,19 +150,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    modalCloseBtn.addEventListener('click', () => {
-        closeModal(modal);
-    });
-
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal(modal);
+        if (e.target === modal || e.target.getAttribute('data-close') == '') {
+            closeModal();
         }
     });
 
     document.addEventListener('keydown', (e) => {
         if (e.code === "Escape" && modal.matches('.show')) {
-            closeModal(modal);
+            closeModal();
         }
     });
 
@@ -126,108 +172,85 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.addEventListener('scroll', showModalByScroll); //обработчик сробатывающий при прокрутке страницы
-});
 
-//menu
+    //Forms
 
-class MenuItem {
-    constructor(selector, title, text, cost, img, alt, ...classes) {
-        this.container = document.querySelector(selector);
-        this.title = title;
-        this.text = text;
-        this.cost = cost;
-        this.img = img;
-        this.alt = alt;
-        this.transfer = 27; //курс валюты, в будущем можно получать с сервера
-        this.classes = classes;
-        this.changeToUAH();
-    }
+    const forms = document.querySelectorAll('form');
 
-    changeToUAH() {
-        this.cost = Math.round(this.cost * this.transfer);
-    }
+    const message = {
+        loading: 'img/form/spinner.svg',
+        success: 'Спасибо',
+        failure: 'Что-то пошло не так('
+    };
 
-    addMenu() {
-        this.element = document.createElement('div');
-
-        if (!this.classes.length) { //параметр по умолчанию
-            this.element.classList.add('menu__item');
-        } else {
-            this.classes.forEach(newClass => this.element.classList.add(newClass));
-        }
-
-        this.element.innerHTML += 
-            `<img src=${this.img} alt=${this.alt}>
-            <h3 class="menu__item-subtitle">Меню "${this.title}"</h3>
-            <div class="menu__item-descr">${this.text}</div>
-            <div class="menu__item-divider"></div>
-            <div class="menu__item-price">
-            <div class="menu__item-cost">Цена:</div>
-                <div class="menu__item-total">
-                <span>${this.cost}</span> грн/день</div>
-            </div>`;
-        this.container.append(this.element);
-    }
-}
-
-// const secondFintess = new MenuItem(
-//     '.menu__field .container', 
-//     'Фитнес', 
-//     'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
-//     11.11, 
-//     'img/tabs/vegy.jpg', 
-//     'vegy');
-// secondFintess.addMenu();
-
-//Forms
-
-const forms = document.querySelectorAll('form');
-
-const message = {
-    loading: 'Загрузка',
-    success: 'Спасибо',
-    failure: 'Что-то пошло не так'
-};
-
-forms.forEach(item => {
-    postData(item);
-});
-
-function postData(form) {
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const statusMessage = document.createElement('div');
-        statusMessage.classList.add('status');
-        statusMessage.textContent = message.loading;
-        form.append(statusMessage);
-
-        const formData = new FormData(form);
-
-        const object = {};
-        formData.forEach((value, key) => {
-            object[key] = value;
-        });
-
-        const json = JSON.stringify(object);
-
-        const request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        request.setRequestHeader('Content-type', 'application/json');
-
-        request.send(json);
-
-        request.addEventListener('load', () => {
-            if (request.status === 200) {
-                console.log(request.response);
-                statusMessage.textContent = message.success;
-                form.reset();
-                setTimeout(() => {
-                    statusMessage.remove();
-                }, 3000);
-            } else {
-                statusMessage.textContent = message.failure;
-            }
-        });
+    forms.forEach(item => {
+        postData(item);
     });
-}
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const statusMessage = document.createElement('img');
+            statusMessage.src = message.loading;
+            statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+            statusMessage.textContent = message.loading;
+            form.insertAdjacentElement('afterend', statusMessage);
+
+            const formData = new FormData(form);
+
+            const object = {};
+            formData.forEach((value, key) => {
+                object[key] = value;
+            });
+
+            const json = JSON.stringify(object);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-type', 'application/json');
+
+            request.send(json);
+
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    console.log(request.response);
+                    showThanksModal(message.success);
+                    statusMessage.remove();
+                    form.reset();
+                } else {
+                    showThanksModal(message.failure);
+                }
+            });
+        });
+    }
+
+    function showThanksModal(message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+
+        prevModalDialog.classList.add('hide');
+        openModal();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div data-close class="modal__close">&times;</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `;
+
+        document.querySelector('.modal').append(thanksModal);
+
+        setTimeout(() => {
+            thanksModal.remove();
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+            closeModal();
+        }, 4000);
+    }
+});
