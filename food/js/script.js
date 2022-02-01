@@ -119,14 +119,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // const secondFintess = new MenuItem(
-    //     '.menu__field .container', 
-    //     'Фитнес', 
-    //     'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
-    //     11.11, 
-    //     'img/tabs/vegy.jpg', 
-    //     'vegy');
-    // secondFintess.addMenu();
+    const getResource = async (url) => {
+        const res = await fetch(url);
+
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, status: ${res.status}`); //генерируем ошибку
+        }
+
+        return await res.json();
+    };
+
+    getResource('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({title, descr, price, img, altimg}) => {
+                new MenuItem('.menu__field .container', title, descr, price, img, altimg).addMenu();
+            });
+        });
 
     //Modal
 
