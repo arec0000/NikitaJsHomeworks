@@ -269,44 +269,64 @@ document.addEventListener('DOMContentLoaded', () => {
           next = document.querySelector('.offer__slider-next'),
           back = document.querySelector('.offer__slider-prev'),
           total = document.querySelector('#total'),
-          current = document.querySelector('#current');
+          current = document.querySelector('#current'),
+          slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+          slidesField = document.querySelector('.offer__slider-inner'),
+          width = window.getComputedStyle(slidesWrapper).width; //ширина окна слайдера
     
     let currentCount = 1;
+    let offset = 0;
 
     total.textContent = getZero(slides.length);
+    current.textContent = getZero(currentCount);
+
+    slidesField.style.width = 100 * slides.length + '%';
+    slidesField.style.display = 'flex';
+    slidesField.style.transition = '0.5s all';
+
+    slidesWrapper.style.overflow = 'hidden';
 
     slides.forEach((slide) => {
-        hideSlide(slide);
+        slide.style.width = width;
     });
 
-    showSlide(slides[currentCount - 1]);
-
     next.addEventListener('click', () => {
-        hideSlide(slides[currentCount - 1]);
+        // if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+        //     offset = 0;
+        // } else {
+        //     offset += +width.slice(0, width.length - 2);
+        // }
+        // slidesField.style.transform = `translateX(-${offset}px)`;
+        
         if (currentCount < slides.length) {
             currentCount++;
         } else {
             currentCount = 1;
         }
-        showSlide(slides[currentCount - 1]);
+
+        current.textContent = getZero(currentCount);
+
+        offset = +width.slice(0, width.length - 2) * (currentCount - 1);
+        slidesField.style.transform = `translateX(-${offset}px)`;
     });
 
     back.addEventListener('click', () => {
-        hideSlide(slides[currentCount - 1]);
+        // if (offset == 0) {
+        //     offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+        // } else {
+        //     offset -= +width.slice(0, width.length - 2);
+        // }
+        // slidesField.style.transform = `translateX(-${offset}px)`;
+
         if (currentCount > 1) {
             currentCount--;
         } else {
             currentCount = slides.length;
         }
-        showSlide(slides[currentCount - 1]);
-    });
 
-    function showSlide(slide) {
-        slide.classList.remove('hide');
         current.textContent = getZero(currentCount);
-    }
 
-    function hideSlide(slide) {
-        slide.classList.add('hide');
-    }
+        offset = +width.slice(0, width.length - 2) * (currentCount - 1);
+        slidesField.style.transform = `translateX(-${offset}px)`;
+    });
 });
