@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function changeSlide() {
-        offset = +width.slice(0, width.length - 2) * (currentCount - 1);
+        offset = +width.replace(/\D/g, '') * (currentCount - 1);
         slidesField.style.transform = `translateX(-${offset}px)`;
         current.textContent = getZero(currentCount);
         dots.forEach(dot => dot.style.opacity = '.5');
