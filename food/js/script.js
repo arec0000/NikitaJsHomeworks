@@ -370,4 +370,67 @@ document.addEventListener('DOMContentLoaded', () => {
         dots.forEach(dot => dot.style.opacity = '.5');
         dots[currentCount - 1].style.opacity = '1';
     }
+
+    //Calculator
+
+    const result = document.querySelector('.calculating__result span');
+    let height, weight, age, 
+    gender = 'female', 
+    ratio = 1.375;
+
+    totalCalculation();
+    getStaticInf('#gender', 'calculating__choose-item_active');
+    getStaticInf('.calculating__choose_big', 'calculating__choose-item_active');
+    getDynamicInf('#height');
+    getDynamicInf('#weight');
+    getDynamicInf('#age');
+
+    function totalCalculation() {
+        if (gender && height && weight && age && ratio) {
+            if (gender == 'female') {
+                result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+            } else {
+                result.textContent = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+            }
+        } else {
+            result.textContent = 'не все поля заполнены(';
+        }
+    }
+
+    function getStaticInf(parent, activeClass) {
+        const elements = document.querySelectorAll(`${parent} div`);
+        document.querySelector(parent).addEventListener('click', (e) => {
+            if (e.target.classList.contains('calculating__choose-item')) {
+                if (e.target.getAttribute('data-ratio')) {
+                    ratio = +e.target.getAttribute('data-ratio');
+                    elements.forEach(element => element.classList.remove(activeClass));
+                    e.target.classList.add(activeClass);
+                    totalCalculation();
+                } else {
+                    gender = e.target.getAttribute('id');
+                    elements.forEach(element => element.classList.remove(activeClass));
+                    e.target.classList.add(activeClass);
+                    totalCalculation();
+                }
+            }
+        });
+    }
+
+    function getDynamicInf(selector) {
+        const input = document.querySelector(selector);
+        input.addEventListener('input', () => {
+            switch(input.getAttribute('id')) {
+                case 'height':
+                    height = +input.value;
+                    break;
+                case 'weight':
+                    weight = + input.value;
+                    break;
+                case 'age':
+                    age = +input.value;
+                    break;
+            }
+            totalCalculation();
+        });
+    }
 });
