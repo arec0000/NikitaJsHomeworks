@@ -374,16 +374,43 @@ document.addEventListener('DOMContentLoaded', () => {
     //Calculator
 
     const result = document.querySelector('.calculating__result span');
-    let height, weight, age, 
-    gender = 'female', 
-    ratio = 1.375;
+    let height, weight, age, gender, ratio;
 
-    totalCalculation();
+    if (localStorage.getItem('ratio')) {
+        ratio = localStorage.getItem('ratio');
+    } else {
+        ratio = 1.375;
+        localStorage.setItem('ratio', 1.375);
+    }
+
+    if (localStorage.getItem('gender')) {
+        gender = localStorage.getItem('gender');
+    } else {
+        gender = 'female';
+        localStorage.setItem('ratio', 'female');
+    }
+
+    calculatorElementInit('#gender div', 'calculating__choose-item_active');
+    calculatorElementInit('.calculating__choose_big div', 'calculating__choose-item_active');
+    totalCalculation('.calculating__choose_big', 'calculating__choose-item_active');
     getStaticInf('#gender', 'calculating__choose-item_active');
     getStaticInf('.calculating__choose_big', 'calculating__choose-item_active');
     getDynamicInf('#height');
     getDynamicInf('#weight');
     getDynamicInf('#age');
+
+    function calculatorElementInit(selector, activeClass) {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.classList.remove(activeClass);
+            if (element.getAttribute('id') == localStorage.getItem('gender')) {
+                element.classList.add(activeClass);
+            }
+            if (element.getAttribute('data-ratio') == localStorage.getItem('ratio')) {
+                element.classList.add(activeClass);
+            }
+        });
+    }
 
     function totalCalculation() {
         if (gender && height && weight && age && ratio) {
@@ -403,15 +430,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.classList.contains('calculating__choose-item')) {
                 if (e.target.getAttribute('data-ratio')) {
                     ratio = +e.target.getAttribute('data-ratio');
-                    elements.forEach(element => element.classList.remove(activeClass));
-                    e.target.classList.add(activeClass);
-                    totalCalculation();
+                    localStorage.setItem('ratio', ratio);
                 } else {
                     gender = e.target.getAttribute('id');
-                    elements.forEach(element => element.classList.remove(activeClass));
-                    e.target.classList.add(activeClass);
-                    totalCalculation();
+                    localStorage.setItem('gender', gender);
                 }
+                elements.forEach(element => element.classList.remove(activeClass));
+                e.target.classList.add(activeClass);
+                totalCalculation();
             }
         });
     }
@@ -419,18 +445,28 @@ document.addEventListener('DOMContentLoaded', () => {
     function getDynamicInf(selector) {
         const input = document.querySelector(selector);
         input.addEventListener('input', () => {
-            switch(input.getAttribute('id')) {
-                case 'height':
-                    height = +input.value;
-                    break;
-                case 'weight':
-                    weight = + input.value;
-                    break;
-                case 'age':
-                    age = +input.value;
-                    break;
+            if (/\D/.test(input.value)) {
+                input.style.backgroundColor = '#F49191';
+                input.value = input.value.replace(/\D/, '');
+            } else {
+                input.style.backgroundColor = '#FFF';
+                switch(input.getAttribute('id')) {
+                    case 'height':
+                        height = +input.value;
+                        break;
+                    case 'weight':
+                        weight = + input.value;
+                        break;
+                    case 'age':
+                        age = +input.value;
+                        break;
+                }
+                totalCalculation();
             }
-            totalCalculation();
+        });
+
+        input.addEventListener('focusout', () => {
+            input.style.backgroundColor = '#FFF';
         });
     }
 });
