@@ -1,4 +1,4 @@
-function timer() {
+function timer(id, deadLine) {
     function getTimeRemaining(endTime) { //Получаем разницу между конечным временем и текущим и записываем её в объект
         const t = Date.parse(endTime) - Date.now(),
               days = Math.floor(t / (1000 * 60 * 60 * 24)),
@@ -43,7 +43,7 @@ function timer() {
         }
     }
 
-    setClock('.timer', '2021-11-20'); //Запускаем таймер, задаём селектор таймера и время окончания
+    setClock(id, deadLine); //Запускаем таймер, задаём селектор таймера и время окончания
 }
 
-module.exports = timer;
+export default timer;

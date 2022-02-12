@@ -1,12 +1,13 @@
-function slider() {
-    const slides = document.querySelectorAll('.offer__slide'),
-          slider = document.querySelector('.offer__slider'),
-          next = document.querySelector('.offer__slider-next'),
-          back = document.querySelector('.offer__slider-prev'),
-          total = document.querySelector('#total'),
-          current = document.querySelector('#current'),
-          slidesWrapper = document.querySelector('.offer__slider-wrapper'),
-          slidesField = document.querySelector('.offer__slider-inner'),
+function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, field}) {
+
+    const slides = document.querySelectorAll(slide),
+          slider = document.querySelector(container),
+          next = document.querySelector(nextArrow),
+          back = document.querySelector(prevArrow),
+          total = document.querySelector(totalCounter),
+          current = document.querySelector(currentCounter),
+          slidesWrapper = document.querySelector(wrapper),
+          slidesField = document.querySelector(field),
           width = window.getComputedStyle(slidesWrapper).width; //ширина окна слайдера
 
     function getZero(a) { //если число меньше 10, добавлем 0 перед ним
@@ -113,4 +114,4 @@ function slider() {
     }
 }
 
-module.exports = slider;
+export default slider;
